@@ -1,0 +1,22 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "postman.workingDirectory": "${workspaceFolder}",
+        "postman.environmentFile": "${workspaceFolder}/postman_workspace.json",
+        "editor.formatOnSave": true,
+        "files.exclude": {
+            "**/.git": true,
+            "**/.DS_Store": true,
+            "**/node_modules": true
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "postman.postman-for-vscode"
+        ]
+    }
+}

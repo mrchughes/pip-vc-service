@@ -1,0 +1,64 @@
+{
+    "info": {
+        "name": "PIP VC Service Workspace",
+        "description": "API collections for the PIP VC service"
+    },
+    "collections": [
+        {
+            "name": "PIP VC Service",
+            "path": "./pip_vc_collection.json"
+        }
+    ],
+    "environments": [
+        {
+            "name": "Local Development",
+            "values": [
+                {
+                    "key": "pip_vc_url",
+                    "value": "http://localhost:3002",
+                    "enabled": true
+                },
+                {
+                    "key": "oidc_provider_url",
+                    "value": "http://localhost:3001",
+                    "enabled": true
+                },
+                {
+                    "key": "webid",
+                    "value": "https://user.example.org/profile/card#me",
+                    "enabled": true
+                },
+                {
+                    "key": "access_token",
+                    "value": "dummy_token",
+                    "enabled": true
+                },
+                {
+                    "key": "vc_example_jsonld",
+                    "value": "{\"@context\":[\"https://www.w3.org/2018/credentials/v1\"],\"type\":[\"VerifiableCredential\"],\"issuer\":\"did:web:pip.gov.uk\",\"credentialSubject\":{\"id\":\"https://user.example.org/profile/card#me\"}}",
+                    "enabled": true
+                },
+                {
+                    "key": "vc_example_turtle",
+                    "value": "@prefix cred: <https://www.w3.org/2018/credentials#> .\n@prefix schema: <http://schema.org/> .\n\n<urn:uuid:benefit-award-vc-123> a cred:VerifiableCredential .",
+                    "enabled": true
+                }
+            ]
+        },
+        {
+            "name": "Test Environment",
+            "values": [
+                {
+                    "key": "pip_vc_url",
+                    "value": "https://pip.test.example.org",
+                    "enabled": true
+                },
+                {
+                    "key": "oidc_provider_url",
+                    "value": "https://oidc.test.example.org",
+                    "enabled": true
+                }
+            ]
+        }
+    ]
+}

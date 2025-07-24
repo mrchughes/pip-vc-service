@@ -55,6 +55,17 @@ docker-compose up
 
 See `docs/openapi.yaml` for the full API specification.
 
+### Postman Collection
+
+This service includes a Postman collection (`pip_vc_collection.json`) that documents the API endpoints and provides examples. All API changes must be reflected in this collection.
+
+To use the collection:
+1. Import it into Postman
+2. Set up your environment variables (`base_url`, `webid`, etc.)
+3. Run the collection to test your implementation
+
+Refer to the project's [POSTMAN_GUIDE.md](../POSTMAN_GUIDE.md) for detailed instructions on Postman integration and workflows.
+
 ## Testing
 
 ```bash
