@@ -1,0 +1,27 @@
+@prefix cred: <https://www.w3.org/2018/credentials#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<urn:uuid:pip-benefit-award-001>
+    a cred:VerifiableCredential ;
+    rdf:type <https://gov.uk/schemas/PIPBenefitCredential> ;
+    cred:issuer <did:web:pip.gov.uk> ;
+    cred:credentialSubject <https://user.example.org/profile/card#me> ;
+    cred:issuanceDate "2025-01-15T10:30:00Z"^^xsd:dateTime ;
+    dc:created "2025-01-15T10:30:00Z"^^xsd:dateTime ;
+    dc:title "PIP Benefit Award Credential" ;
+    dc:creator <did:web:pip.gov.uk> ;
+    schema:benefitType "PIP" ;
+    schema:amount "£162.90/week" ;
+    schema:dateCreated "2025-01-15"^^xsd:date ;
+    schema:totalAmount "£162.90/week" ;
+    cred:proof [
+        a cred:Proof ;
+        cred:type "RsaSignature2018" ;
+        cred:created "2025-01-15T10:30:00Z"^^xsd:dateTime ;
+        cred:proofPurpose "assertionMethod" ;
+        cred:verificationMethod <did:web:pip.gov.uk#key-1> ;
+        cred:jws "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.mock-signature-data-here"
+    ] .

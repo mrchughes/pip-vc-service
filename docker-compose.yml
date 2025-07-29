@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  pip-vc-service:
+    build: .
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=development
+      - SERVICE_DOMAIN=pip.gov.uk
+      - SERVICE_DID_WEB=did:web:pip.gov.uk
+      - SOLID_OIDC_ISSUER=http://mock-oidc:3100
+      - DEFAULT_PDS_BASE=http://mock-pds:3101
+      - JWT_SECRET=development-secret-key
+    depends_on:
+      - mock-oidc
+      - mock-pds
+      - mock-did-web
+    networks:
+      - pip-vc-network
+
+  mock-oidc:
+    build:
+      context: .
+      dockerfile: Dockerfile.mock-oidc
+    ports:
+      - "3100:3100"
+    networks:
+      - pip-vc-network
+
+  mock-pds:
+    build:
+      context: .
+      dockerfile: Dockerfile.mock-pds
+    ports:
+      - "3101:3101"
+    networks:
+      - pip-vc-network
+
+  mock-did-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.mock-did-web
+    ports:
+      - "3102:3102"
+    networks:
+      - pip-vc-network
+
+networks:
+  pip-vc-network:
+    driver: bridge
+
+volumes:
+  pod-storage:
+    driver: local

@@ -1,0 +1,38 @@
+{
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://schema.org/",
+        {
+            "PIPBenefitCredential": "https://gov.uk/schemas/PIPBenefitCredential",
+            "benefitType": "https://schema.org/name",
+            "amount": "https://schema.org/amount",
+            "assessmentDate": "https://schema.org/dateCreated",
+            "components": "https://gov.uk/schemas/benefitComponents"
+        }
+    ],
+    "id": "urn:uuid:pip-benefit-award-001",
+    "type": [
+        "VerifiableCredential",
+        "PIPBenefitCredential"
+    ],
+    "issuer": "did:web:pip.gov.uk",
+    "issuanceDate": "2025-01-15T10:30:00Z",
+    "credentialSubject": {
+        "id": "https://user.example.org/profile/card#me",
+        "benefitType": "PIP",
+        "amount": "£162.90/week",
+        "assessmentDate": "2025-01-15",
+        "components": {
+            "dailyLiving": "Standard - £68.10",
+            "mobility": "Enhanced - £94.80"
+        },
+        "totalWeeklyAmount": "£162.90"
+    },
+    "proof": {
+        "type": "RsaSignature2018",
+        "created": "2025-01-15T10:30:00Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:web:pip.gov.uk#key-1",
+        "jws": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.mock-signature-data-here"
+    }
+}

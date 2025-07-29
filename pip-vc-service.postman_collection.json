@@ -1,0 +1,462 @@
+{
+  "info": {
+    "name": "PIP VC Service API Tests",
+    "description": "Comprehensive API tests for PIP VC Service",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3003",
+      "type": "string"
+    },
+    {
+      "key": "webid",
+      "value": "https://user.example.org/profile/card#me",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has correct fields', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('status', 'healthy');",
+              "    pm.expect(jsonData).to.have.property('service', 'PIP VC Service');",
+              "    pm.expect(jsonData).to.have.property('timestamp');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/service/status",
+          "host": ["{{base_url}}"],
+          "path": ["service", "status"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Service status is active', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('active');",
+              "    pm.expect(jsonData.service_name).to.exist;",
+              "    pm.expect(jsonData.capabilities).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service DID Document",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/service/did.json",
+          "host": ["{{base_url}}"],
+          "path": ["service", "did.json"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('DID document structure', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('@context');",
+              "    pm.expect(jsonData).to.have.property('verificationMethod');",
+              "    pm.expect(jsonData.verificationMethod).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"redirect_uri\": \"{{base_url}}/auth/callback\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Auth URL returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('authUrl');",
+              "    pm.expect(jsonData.authUrl).to.include('response_type=code');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication - Callback",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/callback?code=test-code&state=test-state",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "callback"],
+          "query": [
+            {
+              "key": "code",
+              "value": "test-code"
+            },
+            {
+              "key": "state",
+              "value": "test-state"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Token returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('token');",
+              "    pm.expect(jsonData).to.have.property('type', 'Bearer');",
+              "    ",
+              "    // Store token for subsequent requests",
+              "    pm.environment.set('access_token', jsonData.token);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Registration",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"domain\": \"pip.gov.uk\",\n  \"did_web\": \"did:web:pip.gov.uk\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/service/register",
+          "host": ["{{base_url}}"],
+          "path": ["service", "register"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Registration successful', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData).to.have.property('registration');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Eligibility Data",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/eligibility",
+          "host": ["{{base_url}}"],
+          "path": ["eligibility"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Benefit data returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('benefitType');",
+              "    pm.expect(jsonData).to.have.property('amount');",
+              "    pm.expect(jsonData).to.have.property('eligibility');",
+              "    pm.expect(jsonData.eligibility.eligible).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Preview VC",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/vc/preview",
+          "host": ["{{base_url}}"],
+          "path": ["vc", "preview"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('VC preview returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData).to.have.property('preview', true);",
+              "    pm.expect(jsonData).to.have.property('formats');",
+              "    pm.expect(jsonData.formats).to.have.property('application/ld+json');",
+              "    pm.expect(jsonData.formats).to.have.property('text/turtle');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Issue VC",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"confirm\": true\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/vc/issue",
+          "host": ["{{base_url}}"],
+          "path": ["vc", "issue"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('VC issued successfully', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData).to.have.property('vcId');",
+              "    pm.expect(jsonData).to.have.property('vc');",
+              "    pm.expect(jsonData.vc).to.have.property('type');",
+              "    pm.expect(jsonData.vc.type).to.include('VerifiableCredential');",
+              "    pm.expect(jsonData.vc.type).to.include('PIPBenefitCredential');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List VCs",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/vc/list",
+          "host": ["{{base_url}}"],
+          "path": ["vc", "list"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('VC list returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('credentials');",
+              "    pm.expect(jsonData.credentials).to.be.an('array');",
+              "    pm.expect(jsonData).to.have.property('totalCount');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling - Unauthorized",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/eligibility",
+          "host": ["{{base_url}}"],
+          "path": ["eligibility"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 401', function () {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "",
+              "pm.test('Error message returned', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling - Not Found",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/nonexistent",
+          "host": ["{{base_url}}"],
+          "path": ["nonexistent"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 404', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Not found error', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error', 'Not Found');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

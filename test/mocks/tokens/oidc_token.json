@@ -1,0 +1,9 @@
+{
+    "webid": "https://user.example.org/profile/card#me",
+    "sub": "user-abc123",
+    "iss": "https://oidc.solid.gov.uk",
+    "aud": "pip.gov.uk",
+    "scope": "openid profile webid",
+    "iat": 1706097600,
+    "exp": 1706099400
+}
